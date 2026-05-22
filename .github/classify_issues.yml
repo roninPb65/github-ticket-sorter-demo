@@ -1,0 +1,54 @@
+# .github/workflows/classify_issues.yml
+#
+# Triggered every time a new issue is OPENED.
+# Runs the TF-IDF classifier and applies a label automatically.
+
+name: Auto-Classify Issue
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write      # needed to add labels and comments
+  contents: read
+
+jobs:
+  classify:
+    name: Classify & Label
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Checkout code (includes model/ directory) ──────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Set up Python ──────────────────────────────────────────────────
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      # ── 3. Install dependencies ───────────────────────────────────────────
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # ── 4. Run classifier ─────────────────────────────────────────────────
+      - name: Classify issue
+        id: classify
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python scripts/classify_issue.py
+
+      # ── 5. (Optional) Print result summary ───────────────────────────────
+      - name: Print classification result
+        if: always()
+        run: |
+          echo "Cluster   : ${{ steps.classify.outputs.cluster }}"
+          echo "Label     : ${{ steps.classify.outputs.label }}"
+          echo "Confidence: ${{ steps.classify.outputs.confidence }}"
