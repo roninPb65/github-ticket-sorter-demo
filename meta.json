@@ -1,0 +1,22 @@
+{
+  "classes": [
+    "Billing / Payments",
+    "Bug Report",
+    "Customer Support Escalation",
+    "Data & Analytics",
+    "DevOps / CI-CD",
+    "Documentation",
+    "Feature Request",
+    "Infrastructure / Cloud",
+    "Integration / API",
+    "Legal / Privacy",
+    "Mobile",
+    "Onboarding",
+    "Performance",
+    "Security & Compliance",
+    "Testing / QA",
+    "UI / UX"
+  ],
+  "accuracy": 1.0,
+  "trained_on": 8000
+}
